@@ -1,5 +1,5 @@
 # 💫 About Me:
-I'm a junior front-end developer with a passion for web and application development. I'm currently working on multiple projects, including a Student Management System, a Cafe Finder app, and an offline astrology-based personality app called AstroMatch. I'm also learning C# for desktop apps and preparing for the Japanese N3 exam.
+I'm a junior front-end developer with a passion for web and application development. I'm currently working on multiple projects, including a Student Management System, Dashboards, and an offline astrology-based personality app called AstroMatch. I'm also learning C# for desktop apps and preparing for the Japanese N3 exam.
 
 
 # 💻 Tech Stack:
