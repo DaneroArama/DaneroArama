@@ -1,0 +1,308 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  canonical?: string;
+  type?: 'website' | 'article' | 'profile';
+  noindex?: boolean;
+  keywords?: string[];
+}
+
+const {
+  title,
+  description,
+  image,
+  canonical,
+  type = 'website',
+  noindex = false,
+  keywords,
+} = Astro.props;
+
+const SITE_NAME = 'Danero';
+const SITE_URL =
+  (import.meta.env.SITE_URL as string | undefined) ||
+  (import.meta.env.PUBLIC_SITE_URL as string | undefined) ||
+  'https://danero.dev';
+
+const DEFAULT_TITLE = 'Danero — Frontend Developer';
+const DEFAULT_DESC =
+  "Danero (Aung Phone Myat) — Frontend Developer based in Myanmar. Building premium web experiences with React, Next.js, Astro, Three.js, GSAP, and TypeScript. Available for freelance and full-time roles.";
+const DEFAULT_IMAGE = '/og-image.png';
+const DEFAULT_KEYWORDS = [
+  'Danero',
+  'Aung Phone Myat',
+  'Full-Stack Developer',
+  'Creative Technologist',
+  'Frontend Developer',
+  'Myanmar Web Developer',
+  'React Developer',
+  'Next.js Developer',
+  'Astro Portfolio',
+  'Three.js Web Developer',
+  'GSAP Animations',
+  'TypeScript Developer',
+  'Freelance Web Developer',
+  'Danero Portfolio'
+];
+
+const pageTitle = title ? `${title} · ${SITE_NAME}` : DEFAULT_TITLE;
+const pageDescription = description ?? DEFAULT_DESC;
+const pageImage = image ?? DEFAULT_IMAGE;
+const absoluteImage = pageImage?.startsWith('http')
+  ? pageImage
+  : `${SITE_URL.replace(/\/$/, '')}${pageImage.startsWith('/') ? pageImage : '/' + pageImage}`;
+const pageCanonical = canonical ?? `${SITE_URL.replace(/\/$/, '')}${Astro.url.pathname}`;
+const pageKeywords = keywords ?? DEFAULT_KEYWORDS;
+
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Aung Phone Myat',
+  alternateName: 'Danero',
+  url: SITE_URL,
+  image: absoluteImage,
+  jobTitle: 'Frontend Developer',
+  email: 'mailto:aungphonemyat2323@gmail.com',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Yangon',
+    addressCountry: 'MM',
+  },
+  sameAs: [
+    'https://github.com/DaneroArama',
+    'https://www.linkedin.com/in/aung-phone-myat-dev2323/',
+  ],
+  knowsAbout: [
+    'React',
+    'Next.js',
+    'Astro',
+    'TypeScript',
+    'Three.js',
+    'GSAP',
+    'Tailwind CSS',
+    'WebGL',
+    'Full-Stack Development',
+    'UI/UX Design',
+  ],
+};
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_NAME,
+  url: SITE_URL,
+  description: DEFAULT_DESC,
+  inLanguage: 'en-US',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: `${SITE_URL.replace(/\/$/, '')}/?q={search_term_string}`,
+    'query-input': 'required name=search_term_string',
+  },
+};
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<!-- =========================================================
+			 BASIC SEO
+			 ========================================================= -->
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="color-scheme" content="dark only" />
+		<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+		<meta name="theme-color" content="#000000" media="(prefers-color-scheme: light)" />
+		<meta name="generator" content={Astro.generator} />
+
+		<title>{pageTitle}</title>
+		<meta name="title" content={pageTitle} />
+		<meta name="description" content={pageDescription} />
+		<meta name="keywords" content={pageKeywords.join(', ')} />
+		<meta name="author" content="Danero (Aung Phone Myat)" />
+		<link rel="canonical" href={pageCanonical} />
+		{noindex ? (
+			<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, notranslate" />
+		) : (
+			<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+		)}
+		<meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+		<meta name="bingbot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+		<meta name="revisit-after" content="7 days" />
+		<meta name="language" content="English" />
+		<meta name="coverage" content="Worldwide" />
+		<meta name="distribution" content="Global" />
+		<meta name="rating" content="General" />
+		<meta name="target" content="all" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="apple-mobile-web-app-title" content={SITE_NAME} />
+		<meta name="format-detection" content="telephone=no" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="application-name" content={SITE_NAME} />
+		<meta name="msapplication-TileColor" content="#000000" />
+		<meta name="msapplication-tap-highlight" content="no" />
+
+		<!-- =========================================================
+			 OPEN GRAPH (Facebook / LinkedIn / Discord / iMessage)
+			 ========================================================= -->
+		<meta property="og:type" content={type} />
+		<meta property="og:site_name" content={SITE_NAME} />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={pageDescription} />
+		<meta property="og:url" content={pageCanonical} />
+		<meta property="og:image" content={absoluteImage} />
+		<meta property="og:image:secure_url" content={absoluteImage} />
+		<meta property="og:image:alt" content={`${SITE_NAME} — ${pageDescription}`} />
+		<meta property="og:image:type" content="image/png" />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:locale" content="en_US" />
+		<meta property="og:locale:alternate" content="my_MM" />
+		{type === 'profile' && (
+			<>
+				<meta property="profile:first_name" content="Aung Phone" />
+				<meta property="profile:last_name" content="Myat" />
+				<meta property="profile:username" content="danero" />
+				<meta property="profile:gender" content="male" />
+			</>
+		)}
+
+		<!-- =========================================================
+			 TWITTER / X CARD
+			 ========================================================= -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:site" content="@danero" />
+		<meta name="twitter:creator" content="@danero" />
+		<meta name="twitter:title" content={pageTitle} />
+		<meta name="twitter:description" content={pageDescription} />
+		<meta name="twitter:image" content={absoluteImage} />
+		<meta name="twitter:image:alt" content={`${SITE_NAME} — ${pageDescription}`} />
+		<meta name="twitter:dnt" content="on" />
+
+		<!-- =========================================================
+			 ICONS & APP METADATA
+			 ========================================================= -->
+		<link rel="icon" type="image/svg+xml" href="/Danero.svg" />
+		<link rel="icon" href="/favicon.ico" sizes="32x32" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+		<link rel="manifest" href="/site.webmanifest" />
+		<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
+		<link rel="shortcut icon" href="Danero.ico" />
+		<meta name="msapplication-config" content="/browserconfig.xml" />
+
+		<!-- =========================================================
+			 PREFETCH / RESOURCE HINTS
+			 ========================================================= -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+		<link rel="dns-prefetch" href="https://api.resend.com" />
+		<link rel="dns-prefetch" href="https://resend.com" />
+
+		<!-- =========================================================
+			 FEED / SITEMAP HINTS
+			 ========================================================= -->
+		<link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+
+		<!-- =========================================================
+			 STRUCTURED DATA (JSON-LD)
+			 ========================================================= -->
+		<script
+			type="application/ld+json"
+			set:html={JSON.stringify(personSchema)}
+		></script>
+		<script
+			type="application/ld+json"
+			set:html={JSON.stringify(websiteSchema)}
+		></script>
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>
+
+<script>
+	import Lenis from '@studio-freight/lenis';
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+	gsap.registerPlugin(ScrollTrigger);
+
+	const lenis = new Lenis({
+		duration: 1.2,
+		easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+		orientation: 'vertical',
+		gestureOrientation: 'vertical',
+		smoothWheel: true,
+		wheelMultiplier: 1,
+		syncTouch: false,
+		touchMultiplier: 2,
+		lerp: 0.1,
+		infinite: false
+	});
+
+	lenis.on('scroll', ScrollTrigger.update);
+
+	gsap.ticker.add((time: number) => {
+		lenis.raf(time * 1000);
+	});
+
+	gsap.ticker.lagSmoothing(0);
+
+	ScrollTrigger.scrollerProxy(document.documentElement, {
+		scrollTop(value) {
+			if (arguments.length) {
+				lenis.scrollTo(value ?? 0, { immediate: true });
+			}
+			return lenis.scroll;
+		},
+		getBoundingClientRect() {
+			return {
+				top: 0,
+				left: 0,
+				width: window.innerWidth,
+				height: window.innerHeight
+			};
+		},
+		fixedMarkers: true
+	});
+
+	ScrollTrigger.defaults({ scroller: document.documentElement });
+
+	document.documentElement.addEventListener('click', (e: Event) => {
+		const target = e.target as HTMLElement;
+		const anchor = target.closest('a[href^="#"]') as HTMLAnchorElement | null;
+
+		if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href') !== '#') {
+			const id = anchor.getAttribute('href')!.slice(1);
+			const el = document.getElementById(id);
+			if (el) {
+				e.preventDefault();
+				lenis.scrollTo(el, { offset: -80, duration: 1.2 });
+			}
+		}
+	});
+
+	window.addEventListener('load', () => {
+		ScrollTrigger.refresh();
+	});
+
+	(globalThis as any).lenis = lenis;
+	(globalThis as any).gsap = gsap;
+	(globalThis as any).ScrollTrigger = ScrollTrigger;
+</script>
+
+<style>
+	html,
+	body {
+		margin: 0;
+		width: 100%;
+		height: 100%;
+	}
+</style>
