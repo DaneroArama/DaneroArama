@@ -4,7 +4,7 @@ import TextPressure from './TextPressure';
 
 <footer class="footer-section relative w-full bg-black overflow-hidden">
   <!-- TextPressure Background with Parallax -->
-  <div class="footer-bg absolute h-87.5 bottom-10 left-0 right-0 flex items-center justify-center opacity-5 pointer-events-none">
+  <div class="hidden footer-bg absolute h-87.5 bottom-10 left-0 right-0 md:flex items-center justify-center opacity-5 pointer-events-none">
       <TextPressure
         client:load
         text="DANERO"
@@ -17,6 +17,20 @@ import TextPressure from './TextPressure';
         scale={true}
         minFontSize={250}
       />
+  </div>
+  <div class="md:hidden footer-bg absolute h-20 bottom-0 left-0 right-0 flex items-center justify-center opacity-5 pointer-events-none">
+    <TextPressure
+      client:load
+      text="DANERO"
+      fontFamily="Inter"
+      fontUrl="https://fonts.googleapis.com/css2?family=Inter:wght@100;900"
+      textColor="#FFFFFF"
+      width={true}
+      weight={true}
+      flex={true}
+      scale={true}
+      minFontSize={70}
+    />
   </div>
   <!-- Content -->
   <div class="footer-content relative z-10 mx-auto w-full max-w-7xl px-6 md:px-12 lg:px-16 py-20">

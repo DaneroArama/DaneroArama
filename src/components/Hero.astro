@@ -9,7 +9,7 @@ import Lanyard from './lanyard/lanyard.tsx';
   <div class="relative z-10 h-full flex flex-col md:flex-row items-center justify-between mt-50 md:mt-0 px-6 md:px-16 lg:px-24">
     <!-- Left Side - Content -->
     <div class="w-full md:w-1/2 space-y-8 text-left">
-      <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-none tracking-tight">
+      <h1 class="text text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-none tracking-tight" data-hero>
         FRONTEND<br/>
         DEVELOPER &<br/>
         FULL-STACK<br/>
@@ -35,3 +35,21 @@ import Lanyard from './lanyard/lanyard.tsx';
     <Lanyard frontImage="/Danero.png" client:load />
   </div>
 </section>
+
+<script>
+  import gsap from 'gsap';
+  import { SplitText } from 'gsap/SplitText';
+
+  gsap.registerPlugin(SplitText);
+
+  const split = SplitText.create('.text', { type: 'chars' });
+
+  gsap.from(split.chars, {
+    opacity: 0.1,
+    scale: 0.8,
+    filter: 'blur(4px)',
+    stagger: { each: 0.06, from: 'center' },
+    duration: 0.4,
+    ease: 'power2.out'
+  });
+</script>

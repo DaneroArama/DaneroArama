@@ -14,7 +14,8 @@
       <!-- Left: Bio Summary -->
       <div class="about-bio lg:col-span-3 space-y-6">
         <h3 class="text-2xl md:text-3xl font-bold text-white leading-tight">
-          Hey, I'm Aung Phone Myat — a Front-End Developer based in Yangon, Myanmar.
+          <span class="typewriter-text"></span>
+          <span class="typewriter-cursor">|</span>
         </h3>
         <p class="about-summary text-gray-400 text-lg leading-relaxed">
           Front-End Developer with 1+ year of professional experience building responsive web applications using React, Next.js, TypeScript, and Tailwind CSS. Experienced in integrating RESTful APIs and GraphQL, creating reusable UI components, and collaborating with cross-functional teams to deliver scalable, user-focused applications. Passionate about modern frontend development and continuous learning.
@@ -44,7 +45,7 @@
             <div class="text-gray-500 text-sm font-mono">Years Experience</div>
           </div>
           <div class="about-stat p-6 rounded-2xl bg-white/[0.03] border border-white/10">
-            <div class="text-4xl md:text-5xl font-bold text-white mb-2">10+</div>
+            <div class="text-4xl md:text-5xl font-bold text-white mb-2">8</div>
             <div class="text-gray-500 text-sm font-mono">Projects Shipped</div>
           </div>
           <div class="about-stat p-6 rounded-2xl bg-white/[0.03] border border-white/10">
@@ -71,13 +72,13 @@
         <div class="experience-item group relative py-10 transition-all duration-500">
           <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div class="md:w-1/4">
-              <div class="text-amber-400 text-sm font-mono mb-2">Ongoing</div>
+              <div class="text-orange-500 text-sm font-mono mb-2">Ongoing</div>
               <div class="text-gray-600 text-sm">Yangon, Myanmar</div>
             </div>
             <div class="flex-1">
               <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
                 <div>
-                  <h4 class="text-2xl md:text-3xl font-bold text-white group-hover:text-amber-400 transition-colors duration-300 mb-1">
+                  <h4 class="text-2xl md:text-3xl font-bold text-white group-hover:text-orange-500 transition-colors duration-300 mb-1">
                     Front End Developer
                   </h4>
                   <p class="text-gray-500 font-mono text-sm">MyJobs.com.mm · Full-Time</p>
@@ -109,12 +110,12 @@
         <div class="experience-item group relative border-t border-white/5 py-10 hover:border-white/20 transition-all duration-500">
           <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div class="md:w-1/4">
-              <div class="text-pink-400 text-sm font-mono mb-2">08/2025 - 07/2026</div>
+              <div class="text-orange-400 text-sm font-mono mb-2">08/2025 - 07/2026</div>
             </div>
             <div class="flex-1">
               <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
                 <div>
-                  <h4 class="text-2xl md:text-3xl font-bold text-white group-hover:text-pink-400 transition-colors duration-300 mb-1">
+                  <h4 class="text-2xl md:text-3xl font-bold text-white group-hover:text-orange-400 transition-colors duration-300 mb-1">
                     Front End Developer
                   </h4>
                   <p class="text-gray-500 font-mono text-sm">EzyProduct · Project Based</p>
@@ -146,13 +147,13 @@
         <div class="experience-item group relative border-t border-white/5 py-10 hover:border-white/20 transition-all duration-500">
           <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div class="md:w-1/4">
-              <div class="text-sky-400 text-sm font-mono mb-2">02/2025 - Present</div>
+              <div class="text-pink-400 text-sm font-mono mb-2">02/2025 - Present</div>
               <div class="text-gray-600 text-sm">&nbsp;</div>
             </div>
             <div class="flex-1">
               <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
                 <div>
-                  <h4 class="text-2xl md:text-3xl font-bold text-white group-hover:text-sky-400 transition-colors duration-300 mb-1">
+                  <h4 class="text-2xl md:text-3xl font-bold text-white group-hover:text-pink-400 transition-colors duration-300 mb-1">
                     Development Specialist
                   </h4>
                   <p class="text-gray-500 font-mono text-sm">UXMM · Volunteer</p>
@@ -269,11 +270,21 @@
   </div>
 </section>
 
+<style>
+  .typewriter-cursor {
+    animation: blink 0.8s step-end infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+</style>
+
 <script>
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { TextPlugin } from 'gsap/TextPlugin';
 
-  gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
   const _gsap = (globalThis as any).gsap || gsap;
   const _ScrollTrigger = (globalThis as any).ScrollTrigger || ScrollTrigger;
@@ -436,6 +447,18 @@
           toggleActions: 'play none none reverse'
         }
       });
+
+      const typewriterTl = _gsap.timeline({
+        scrollTrigger: {
+          trigger: '.about-bio',
+          start: 'top 80%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+      typewriterTl
+        .to('.typewriter-text', { text: "I'm a Front End Dead", duration: 1.5, ease: 'none', delay: 0.5 })
+        .to('.typewriter-text', { text: "Oops Sorry Wrong Typo!", duration: 1, ease: 'none', delay: 0.6 })
+        .to('.typewriter-text', { text: "Hey, I'm Aung Phone Myat — a Front-End Developer based in Yangon, Myanmar.", duration: 1.4,delay: 0.4, ease: 'none' });
     });
   }
 </script>
