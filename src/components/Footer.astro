@@ -1,5 +1,6 @@
 ---
 import TextPressure from './TextPressure';
+import CatCursor from './CatCursor';
 ---
 
 <footer class="footer-section relative w-full bg-black overflow-hidden">
@@ -39,8 +40,11 @@ import TextPressure from './TextPressure';
       <div class="footer-left space-y-12 w-full max-w-xl">
         <!-- Quote -->
         <div class="space-y-6">
-          <blockquote class="text-3xl md:text-4xl lg:text-5xl font-light text-white leading-tight break-words hyphens-auto w-full">
+          <blockquote class="text-3xl md:text-4xl lg:text-5xl font-light text-white leading-tight wrap-break-word hyphens-auto w-full">
             "The goal is not to be better than the other man, but yourself."
+            <span class="inline-block align-middle ml-2 text-3xl md:text-4xl">
+              <CatCursor client:load />
+            </span>
           </blockquote>
         </div>
 
@@ -72,7 +76,7 @@ import TextPressure from './TextPressure';
           </div>
 
           <!-- Copyright -->
-          <p class="text-gray-500 text-sm break-words">
+          <p class="text-gray-500 text-sm wrap-break-word">
             © 2026 Danero. All rights reserved.
           </p>
         </div>
@@ -88,7 +92,7 @@ import TextPressure from './TextPressure';
         <form id="contact-form" class="space-y-5 w-full" novalidate>
           <!-- Name -->
           <div class="relative w-full">
-            <div class="absolute inset-0 rounded-xl p-[1px] opacity-0 focus-within:opacity-100 transition-opacity duration-500 pointer-events-none">
+            <div class="absolute inset-0 rounded-xl p-px opacity-0 focus-within:opacity-100 transition-opacity duration-500 pointer-events-none">
               <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-rose-500"></div>
             </div>
             <input

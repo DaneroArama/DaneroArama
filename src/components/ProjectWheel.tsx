@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
+import { AnimatePresence, motion } from 'motion/react';
 import OptionWheel from './OptionWheel';
+import DepthCarousel from './DepthCarousel';
 
 interface Project {
   name: string;
@@ -95,12 +97,9 @@ const projects: Project[] = [
 export default function ProjectWheel() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const wheelContainerRef = useRef<HTMLDivElement>(null);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   
   // Refs for GSAP animations
-  const containerRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const periodRef = useRef<HTMLSpanElement>(null);
   const companyRef = useRef<HTMLDivElement>(null);
   const roleRef = useRef<HTMLDivElement>(null);
   const techRef = useRef<HTMLDivElement>(null);
@@ -120,14 +119,12 @@ export default function ProjectWheel() {
   // GSAP blur-to-clear animation when project changes
   useEffect(() => {
     // Skip animation on initial mount
-    if (selectedIndex === 0 && !titleRef.current?.style.opacity) {
+    if (selectedIndex === 0 && !imageRef.current?.style.opacity) {
       return;
     }
 
     const ctx = gsap.context(() => {
       const elements = [
-        titleRef.current,
-        periodRef.current,
         companyRef.current,
         roleRef.current,
         techRef.current,
@@ -169,137 +166,122 @@ export default function ProjectWheel() {
     return () => ctx.revert();
   }, [selectedIndex]);
 
-  // Prevent wheel from hijacking page scroll on mobile
-  useEffect(() => {
-    if (!isMobile || !wheelContainerRef.current) return;
-
-    const wheelContainer = wheelContainerRef.current;
-    let touchStartY = 0;
-    let isWheelActive = false;
-
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY;
-      isWheelActive = false;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      const touchY = e.touches[0].clientY;
-      const deltaY = touchStartY - touchY;
-      
-      if (Math.abs(deltaY) < 10) {
-        isWheelActive = true;
-      }
-
-      if (isWheelActive && Math.abs(deltaY) < 50) {
-        e.preventDefault();
-      }
-    };
-
-    wheelContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
-    wheelContainer.addEventListener('touchmove', handleTouchMove, { passive: false });
-
-    return () => {
-      wheelContainer.removeEventListener('touchstart', handleTouchStart);
-      wheelContainer.removeEventListener('touchmove', handleTouchMove);
-    };
-  }, [isMobile]);
-
   return (
     <>
       {/* Mobile Layout */}
       {isMobile && (
-        <div className="flex flex-col gap-4 w-full">
-          {/* Top — Project Picture Container (full width) */}
-          <div ref={containerRef} className="relative w-full rounded-2xl overflow-hidden aspect-video bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-white/10">
-            <div ref={imageRef} className="absolute inset-0 w-full h-full">
-              {selectedProject.image ? (
-                <img
-                  key={selectedProject.name}
-                  src={selectedProject.image}
-                  alt={selectedProject.name}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-              ) : null}
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 to-blue-900/30" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-            </div>
-          </div>
+        <div className="relative w-full">
+          <div className="relative h-full w-full overflow-visible">
+            <DepthCarousel
+              items={projects.map((p) => ({ image: p.image, alt: p.name }))}
+              cardWidth={800}
+              cardHeight={500}
+              radius={18}
+              depth={170}
+              spread={80}
+              tilt={16}
+              tiltDirection="right"
+              perspective={1300}
+              visibleCards={6}
+              falloff={0.05}
+              blur={5}
+              duration={600}
+              showControls={false}
+              showIndicators
+              loop={false}
+              onChange={(index) => setSelectedIndex(index)}
+              onCardClick={(index) => setExpandedIndex(index)}
+            />
 
-          {/* Bottom — Glass Info Container (full width, below picture) */}
-          <div className="relative w-full rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-6 space-y-4">
-            {/* Project Name & View Project */}
-            <div className="flex items-start justify-between gap-3">
-              <h3 ref={titleRef} className="text-2xl font-bold text-white leading-tight flex-1 drop-shadow-lg">
-                {selectedProject.name}
-              </h3>
-              {selectedProject.link && (
-                <a
-                  ref={buttonRef}
-                  href={selectedProject.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="shrink-0 inline-flex items-center gap-2 px-4 py-2 bg-transparent backdrop-blur-md border border-white rounded-full text-white text-sm transition-all duration-300 hover:scale-105 hover:bg-white/5"
+            <AnimatePresence>
+              {expandedIndex !== null && (
+                <motion.div
+                  key="project-detail"
+                  className="absolute inset-0 z-4000 h-120 flex flex-col rounded-2xl border border-white/10 bg-neutral-950 shadow-2xl"
+                  initial={{ scale: 0.75, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.75, opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 28 }}
                 >
-                  <span>View Project</span>
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                </a>
+                  {(() => {
+                    const p = projects[expandedIndex];
+                    return (
+                      <>
+                        <div className="relative h-52 shrink-0 overflow-hidden">
+                          <img
+                            src={p.image}
+                            alt={p.name}
+                            className="h-full w-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-linear-to-t from-neutral-950 via-neutral-950/10 to-transparent" />
+                          <button
+                            type="button"
+                            aria-label="Close project details"
+                            onClick={() => setExpandedIndex(null)}
+                            className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full border border-white/20 bg-black/50 text-white backdrop-blur-md transition-all duration-300 hover:bg-black/70 active:scale-95"
+                          >
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                          <div className="absolute bottom-3 left-4 right-4">
+                            <h3 className="text-2xl font-bold text-white">{p.name}</h3>
+                            <p className="text-sm text-gray-400">{p.company}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex-1 space-y-4 overflow-y-auto p-5">
+                          <div className="flex items-center gap-2">
+                            <span className="text-gray-500 text-xs font-mono uppercase tracking-wider">Role:</span>
+                            <span className="text-sm font-medium text-white">{p.role}</span>
+                          </div>
+
+                          <p className="text-sm leading-relaxed text-gray-300">{p.description}</p>
+
+                          <div className="space-y-2">
+                            <span className="text-gray-500 text-xs font-mono uppercase tracking-wider">Technologies:</span>
+                            <div className="flex flex-wrap gap-2">
+                              {p.technologies.map((tech, i) => (
+                                <span
+                                  key={i}
+                                  className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-gray-300 text-xs"
+                                >
+                                  {tech}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+
+                          {p.link && (
+                            <a
+                              href={p.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-5 py-2.5 bg-transparent backdrop-blur-md border border-white rounded-full text-white text-sm transition-all duration-300 hover:scale-105"
+                            >
+                              <span>View Project</span>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                            </a>
+                          )}
+                        </div>
+                      </>
+                    );
+                  })()}
+                </motion.div>
               )}
-            </div>
-
-            {/* Technologies */}
-            <div ref={techRef} className="flex flex-wrap gap-2">
-              {selectedProject.technologies.slice(0, 4).map((tech, i) => (
-                <span
-                  key={i}
-                  className="px-2 py-1 bg-black/40 backdrop-blur-sm border border-white/20 rounded-lg text-gray-200 text-xs transition-all duration-300 hover:bg-black/60"
-                >
-                  {tech}
-                </span>
-              ))}
-              {selectedProject.technologies.length > 4 && (
-                <span className="px-2 py-1 text-gray-400 text-xs">
-                  +{selectedProject.technologies.length - 4}
-                </span>
-              )}
-            </div>
+            </AnimatePresence>
           </div>
-
-          {/* Wheel with Instruction */}
-          <div className="space-y-4">
-            <p className="text-gray-500 text-xs font-mono uppercase tracking-wider text-center flex items-center justify-center gap-2">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-              </svg>
-              Drag to change project
-            </p>
-
-            <div ref={wheelContainerRef} className="relative h-[400px] touch-pan-y">
-              <OptionWheel
-                items={projects.map(p => p.name)}
-                defaultSelected={0}
-                onChange={(index) => setSelectedIndex(index)}
-                textColor="#666666"
-                activeColor="#ffffff"
-                side="left"
-                fontSize={1.8}
-                spacing={1.5}
-                curve={0.8}
-                tilt={6}
-                blur={2.5}
-                fade={0.35}
-                minOpacity={0.15}
-                smoothing={180}
-                inset={20}
-                loop={false}
-                draggable={true}
-              />
-            </div>
-          </div>
+          <p className="mt-4 text-gray-500 text-xs font-mono uppercase tracking-wider text-center flex items-center justify-center gap-2">
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+            Swipe to explore &bull; Tap a card for details
+          </p>
         </div>
       )}
 
