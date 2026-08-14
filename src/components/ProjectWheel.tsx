@@ -171,7 +171,7 @@ export default function ProjectWheel() {
       {/* Mobile Layout */}
       {isMobile && (
         <div className="relative w-full">
-          <div className="relative h-full w-full overflow-visible">
+          <div className="relative h-full w-full overflow-auto">
             <DepthCarousel
               items={projects.map((p) => ({ image: p.image, alt: p.name }))}
               cardWidth={800}
