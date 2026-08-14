@@ -39,10 +39,10 @@ import CatCursor from './CatCursor';
       <!-- Left Side - Quote & Social -->
       <div class="footer-left space-y-12 w-full max-w-xl">
         <!-- Quote -->
-        <div class="space-y-6">
+        <div>
           <blockquote class="text-3xl md:text-4xl lg:text-5xl font-light text-white leading-tight wrap-break-word hyphens-auto w-full">
             "The goal is not to be better than the other man, but yourself."
-            <span class="inline-block align-middle ml-2 text-3xl md:text-4xl">
+            <span class="inline-block align-middle mb-5 text-3xl md:text-4xl">
               <CatCursor client:load />
             </span>
           </blockquote>
@@ -362,7 +362,7 @@ import CatCursor from './CatCursor';
         const revealTl = _gsap.timeline({
           scrollTrigger: {
             trigger: footer,
-            start: 'top 80%',
+            start: 'top 95%',
             toggleActions: 'play none none reverse'
           }
         });

@@ -157,7 +157,7 @@ export default function ProjectWheel() {
       if (imageRef.current) {
         tl.fromTo(imageRef.current, 
           { scale: 1.1, opacity: 0.5 },
-          { scale: 1, opacity: 1, duration: 0.8, ease: 'power2.out' },
+          { scale: 1, opacity: 1, duration: 0.3, ease: 'power2.out' },
           '-=0.6'
         );
       }

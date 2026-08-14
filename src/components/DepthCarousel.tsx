@@ -121,6 +121,8 @@ const DepthCarousel = ({
   const wheelTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const reducedRef = useRef(false);
+  const mobileRef = useRef(false);
+  const styleCacheRef = useRef<{ t: string; o: string; f: string; z: string; p: string }[]>([]);
 
   const [active, setActive] = useState(0);
 
@@ -148,6 +150,8 @@ const DepthCarousel = ({
     if (!n) return;
     const dir = cfg.tiltDirection === 'left' ? -1 : 1;
     const sc = scaleRef.current;
+    const mobile = mobileRef.current;
+    const cache = styleCacheRef.current;
 
     for (let i = 0; i < n; i++) {
       const el = cardRefs.current[i];
@@ -174,11 +178,22 @@ const DepthCarousel = ({
       const blurPx = cfg.blur > 0 ? Math.min(cfg.blur, (back / Math.max(1, cfg.visibleCards)) * cfg.blur) : 0;
       const zi = Math.round(2000 - d * 20);
 
-      el.style.transform = `translate(-50%, -50%) scale(${sc}) translateX(${tx.toFixed(2)}px) translateZ(${tz.toFixed(2)}px) rotateY(${ry.toFixed(3)}deg)`;
-      el.style.opacity = opacity.toFixed(3);
-      el.style.filter = `brightness(${brightness.toFixed(3)}) blur(${blurPx.toFixed(2)}px)`;
-      el.style.zIndex = String(zi);
-      el.style.pointerEvents = shown && opacity > 0.05 ? 'auto' : 'none';
+      const tStr = `translate(-50%, -50%) scale(${sc}) translateX(${tx.toFixed(2)}px) translateZ(${tz.toFixed(2)}px) rotateY(${ry.toFixed(3)}deg)`;
+      const oStr = opacity.toFixed(3);
+      // Filter (blur/brightness) forces per-frame rasterization and flickers on
+      // mobile GPUs. On small screens we skip it and rely on the tint overlay.
+      const fStr = mobile ? 'none' : `brightness(${brightness.toFixed(3)}) blur(${blurPx.toFixed(2)}px)`;
+      const zStr = String(zi);
+      const pStr = shown && opacity > 0.05 ? 'auto' : 'none';
+
+      let c = cache[i];
+      if (!c) c = cache[i] = { t: '', o: '', f: '', z: '', p: '' };
+
+      if (c.t !== tStr) { el.style.transform = tStr; c.t = tStr; }
+      if (c.o !== oStr) { el.style.opacity = oStr; c.o = oStr; }
+      if (c.f !== fStr) { el.style.filter = fStr; c.f = fStr; }
+      if (c.z !== zStr) { el.style.zIndex = zStr; c.z = zStr; }
+      if (c.p !== pStr) { el.style.pointerEvents = pStr; c.p = pStr; }
 
       const ov = overlayRefs.current[i];
       if (ov) ov.style.opacity = clamp(back * cfg.falloff * 1.25, 0, 0.86).toFixed(3);
@@ -251,6 +266,17 @@ const DepthCarousel = ({
     });
     ro.observe(root);
     return () => ro.disconnect();
+  }, [layout]);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const update = () => {
+      mobileRef.current = mq.matches;
+      layout(posRef.current);
+    };
+    mobileRef.current = mq.matches;
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
   }, [layout]);
 
   useEffect(() => {
@@ -428,7 +454,7 @@ const DepthCarousel = ({
             ref={el => {
               cardRefs.current[i] = el;
             }}
-            style={{ width: cardWidth, height: cardHeight, borderRadius: radius }}
+            style={{ width: cardWidth, height: cardHeight, borderRadius: radius, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
             aria-roledescription="slide"
             aria-label={`${i + 1} of ${count}`}
             aria-hidden={active !== i}
@@ -439,6 +465,7 @@ const DepthCarousel = ({
               src={item.image}
               alt={item.alt || ''}
               draggable={false}
+              decoding="async"
             />
             <span
               className="pointer-events-none absolute inset-0 opacity-0 mix-blend-multiply"
